@@ -14,5 +14,6 @@ module.exports = {
         "react"
     ],
     "rules": {
+      "no-underscore-dangle": ["error", { "allow": ["_id"] }]
     }
 }
