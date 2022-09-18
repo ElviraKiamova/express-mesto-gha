@@ -1,3 +1,5 @@
+// app.js включает основную логику сервера, запуск и подключение к базе данных;
+
 const express = require('express');
 const mongoose = require('mongoose');
 
