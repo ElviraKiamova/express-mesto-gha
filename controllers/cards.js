@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const Cards = require('../models/card');
 
 module.exports.getCard = (req, res) => {
