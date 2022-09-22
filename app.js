@@ -10,11 +10,11 @@ app.use(bodyParser.urlencoded({
   useCreateIndex: true,
   useFindAndModify: false,
   useUnifiedTopology: true,
-  extended: true }));
+  extended: true,
+}));
 
-app.use('/users', require("./routes/users"));
-app.use('/cards', require("./routes/cards"));
-
+app.use('/users', require('./routes/users'));
+app.use('/cards', require('./routes/cards'));
 
 app.use((req, res, next) => {
   req.user = {
@@ -23,9 +23,6 @@ app.use((req, res, next) => {
   next();
 });
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {useMongoClient:true});
+mongoose.connect('mongodb://localhost:27017/mestodb', {});
 
-
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`)
-});
+app.listen(PORT, () => {});

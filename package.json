@@ -1,5 +1,5 @@
 {
-  "name": "mesto-express",
+  "name": "express-mesto-gha",
   "version": "1.0.0",
   "scripts": {
     "start": "node app.js",
@@ -32,6 +32,7 @@
     "async": "^2.6.0",
     "balanced-match": "^1.0.2",
     "bluebird": "^3.5.0",
+    "body-parser": "^1.20.0",
     "brace-expansion": "^1.1.11",
     "bson": "^1.0.9",
     "buffer-shims": "^1.0.0",
