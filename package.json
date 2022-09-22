@@ -128,7 +128,7 @@
     "minimist": "^1.2.6",
     "mongodb": "^2.2.34",
     "mongodb-core": "^2.1.18",
-    "mongoose": "^4.13.21",
+    "mongoose": "^4.10.8",
     "mpath": "^0.5.1",
     "mpromise": "^0.5.5",
     "mquery": "^2.3.3",
