@@ -9,9 +9,9 @@
   },
   "devDependencies": {
     "@types/mongoose": "^5.11.97",
-    "eslint": "^8.2.0",
+    "eslint": "^8.24.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-react": "^7.31.8",
     "gh-pages": "^4.0.0",
     "nodemon": "^2.0.20"
