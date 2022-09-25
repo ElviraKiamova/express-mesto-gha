@@ -6,4 +6,4 @@ class NotFound extends Error {
   }
 }
 
-module.exports = ErrorNotFound;
+module.exports = NotFound;
