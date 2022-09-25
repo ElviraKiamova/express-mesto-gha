@@ -73,6 +73,9 @@ module.exports.updateUserInfo = (req, res) => {
   User.findByIdAndUpdate(req.user._id, {
     name,
     about,
+  }, {
+    new: true,
+    runValidators: true,
   })
     .then((user) => res.send({
       data: user,
@@ -100,6 +103,9 @@ module.exports.updateAvatar = (req, res) => {
   } = req.body;
   User.findByIdAndUpdate(req.user._id, {
     avatar,
+  }, {
+    new: true,
+    runValidators: true,
   })
     .then((user) => res.send({
       data: user,
