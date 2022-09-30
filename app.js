@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+require('dotenv').config();
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');

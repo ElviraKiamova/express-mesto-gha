@@ -6,14 +6,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 2,
-    max_length: 30,
+    maxlength: 30,
     default: 'Эльвира',
   },
   about: {
     type: String,
     required: true,
     minlength: 2,
-    max_length: 30,
+    maxlength: 30,
     default: 'ммм',
   },
   avatar: {
