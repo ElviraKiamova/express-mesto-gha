@@ -25,4 +25,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
+// app.get('/', (req, res) => {
+//   res.status(200).json('Сервер работает');
+// });
+
 app.listen(PORT);
