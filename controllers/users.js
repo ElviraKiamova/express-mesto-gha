@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 const User = require('../models/user');
 const NotFound = require('../errors/NotFound');
 

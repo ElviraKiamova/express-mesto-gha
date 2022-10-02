@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 const Cards = require('../models/card');
 const NotFound = require('../errors/NotFound');
 
