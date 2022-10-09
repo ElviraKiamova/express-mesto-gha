@@ -145,3 +145,23 @@ module.exports.updateAvatar = (req, res) => {
       });
     });
 };
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+  User.findOne({ email, password })
+    .then((user) => {
+      if (!user) {
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+      return bcrypt.compare(password, user.password);
+    })
+    .then((matched) {
+      if (!matched) {
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+      res.send(matched);
+    })
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
+    });
+};
