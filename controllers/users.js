@@ -1,6 +1,6 @@
 const User = require('../models/user');
 const NotFound = require('../errors/NotFound');
-// const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 
 const {
   ERR_500,
@@ -53,13 +53,16 @@ module.exports.createUser = (req, res) => {
     email,
     password,
   } = req.body;
-  User.create({
-    name,
-    about,
-    avatar,
-    email,
-    password,
-  })
+
+  bcrypt
+    .hash(password, 10)
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
     .then((user) => res.send({
       data: user,
     }))
