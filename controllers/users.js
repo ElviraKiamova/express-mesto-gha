@@ -1,5 +1,4 @@
 const User = require('../models/user');
-
 const NotFound = require('../errors/NotFound');
 
 const {

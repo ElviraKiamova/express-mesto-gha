@@ -1,5 +1,4 @@
 const Cards = require('../models/card');
-
 const NotFound = require('../errors/NotFound');
 
 const {
