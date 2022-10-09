@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const NotFound = require('../errors/NotFound');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const {
   ERR_500,
@@ -148,18 +149,10 @@ module.exports.updateAvatar = (req, res) => {
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
-  User.findOne({ email, password })
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
-      return bcrypt.compare(password, user.password);
-    })
-    .then((matched) {
-      if (!matched) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
-      res.send(matched);
+      const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
+      res.send({ token });
     })
     .catch((err) => {
       res.status(401).send({ message: err.message });
