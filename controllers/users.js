@@ -1,7 +1,7 @@
-const User = require('../models/user');
-const NotFound = require('../errors/NotFound');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const NotFound = require('../errors/NotFound');
+const User = require('../models/user');
 const {
   ERR_500,
   ERR_404,
@@ -160,4 +160,11 @@ module.exports.login = (req, res) => {
     .catch((err) => {
       res.status(401).send({ message: err.message });
     });
+};
+
+module.exports.getUserMe = (req, res) => {
+  const { _id } = req.user;
+  User.find(_id)
+    .then((user) => res.send(user))
+    .catch((err) => res.status(500).send({ message: err.message }));
 };

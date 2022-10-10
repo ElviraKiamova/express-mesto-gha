@@ -3,11 +3,13 @@ require('dotenv').config();
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
-
+const cookieParser = require('cookie-parser');
 const { createUser, login } = require('./controllers/users');
+const auth = require('./middlewares/auth');
 
-const { PORT = 3000 } = process.env;
+const { PORT } = process.env;
 const app = express();
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true,
@@ -22,6 +24,11 @@ app.use((req, res, next) => {
   };
   next();
 });
+
+app.post('/signup', createUser);
+app.post('/signin', login);
+
+app.use(auth);
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
