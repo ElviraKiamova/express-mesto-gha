@@ -164,7 +164,7 @@ module.exports.login = (req, res) => {
 
 module.exports.getUserMe = (req, res) => {
   const { _id } = req.user;
-  User.find(_id)
+  User.find({ _id })
     .then((user) => res.send(user))
     .catch((err) => res.status(500).send({ message: err.message }));
 };

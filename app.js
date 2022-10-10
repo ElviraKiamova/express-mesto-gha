@@ -18,13 +18,6 @@ app.use(bodyParser.urlencoded({
 app.post('/signin', login);
 app.post('/signup', createUser);
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '63259e04caba818adc7ca05a',
-  };
-  next();
-});
-
 app.post('/signup', createUser);
 app.post('/signin', login);
 
