@@ -3,6 +3,7 @@ require('dotenv').config();
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
+
 const { createUser, login } = require('./controllers/users');
 
 const { PORT = 3000 } = process.env;
