@@ -1,23 +1,32 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const NotFound = require('../errors/NotFound');
 const User = require('../models/user');
+const NotFound = require('../errors/NotFound');
 const DataIncorrect = require('../errors/DataIncorrect');
 const RegistrationError = require('../errors/RegistrationError');
 const NotAuthorized = require('../errors/NotAuthorized');
 
-const {
-  ERR_500,
-  ERR_404,
-  ERR_400,
-} = require('../errors/errorСodes');
-
 module.exports.getUser = (req, res, next) => {
   User.find({})
-    .then((users) => res.send({
-      data: users,
-    }))
+    .then((user) => res.status(200).send(user))
     .catch((err) => next(err));
+};
+
+module.exports.getUserMe = (req, res, next) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user._id) {
+        next(new NotFound('Пользователь не найден'));
+      }
+      res.status(200).send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new DataIncorrect('Переданы некорректные данные.'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.getUserId = (req, res, next) => {
@@ -79,19 +88,10 @@ module.exports.createUser = (req, res, next) => {
 };
 
 module.exports.updateUserInfo = (req, res, next) => {
-  const {
-    name,
-    about,
-  } = req.body;
-  User.findByIdAndUpdate(req.user._id, {
-    name,
-    about,
-  }, {
-    new: true,
-    runValidators: true,
-  })
+  const { name, about } = req.body;
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail(() => {
-      throw new NotFound('Пользователь не найден');
+      throw new DataIncorrect('Переданы некорректные данные');
     })
     .then((user) => {
       if (!user) {
@@ -108,17 +108,10 @@ module.exports.updateUserInfo = (req, res, next) => {
 };
 
 module.exports.updateAvatar = (req, res, next) => {
-  const {
-    avatar,
-  } = req.body;
-  User.findByIdAndUpdate(req.user._id, {
-    avatar,
-  }, {
-    new: true,
-    runValidators: true,
-  })
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail(() => {
-      throw new NotFound('Пользователь не найден');
+      throw new DataIncorrect('Переданы некорректные данные');
     })
     .then((user) => {
       if (!user) {
@@ -138,10 +131,11 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.cookie('jwt', token, {
-        maxAge: 3600000,
+        maxAge: 3600000 * 24 * 7,
         httpOnly: true,
+        sameSite: true,
       });
       res.status(201).send({ message: 'Авторизация успешна', token });
     })
@@ -150,23 +144,5 @@ module.exports.login = (req, res, next) => {
         next(new NotAuthorized('Не правильный логин или пароль'));
       }
       next(err);
-    });
-};
-
-module.exports.getUserMe = (req, res, next) => {
-  const { _id } = req.user;
-  User.find({ _id })
-    .then((user) => {
-      if (!user._id) {
-        next(new NotFound('Пользователь не найден'));
-      }
-      res.status(200).send(user);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new DataIncorrect('Переданы некорректные данные.'));
-      } else {
-        next(err);
-      }
     });
 };
