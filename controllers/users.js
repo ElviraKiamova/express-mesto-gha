@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const NotFound = require('../errors/NotFound');
 const User = require('../models/user');
+const DataIncorrect = require('../errors/DataIncorrect');
 
 const {
   ERR_500,
@@ -9,40 +10,31 @@ const {
   ERR_400,
 } = require('../errors/errorСodes');
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   User.find({})
     .then((users) => res.send({
       data: users,
     }))
-    .catch(() => res.status(ERR_500).send({
-      message: 'Ошибка по-умолчанию',
-    }));
+    .catch((err) => next(err));
 };
 
-module.exports.getUserId = (req, res) => {
+module.exports.getUserId = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send({
-      data: user,
-    }))
+    .then((user) => {
+      if (!user._id) {
+        next(new NotFound('Пользователь не найден'));
+      }
+      res.status(200).send(user);
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res
-          .status(ERR_400)
-          .send({
-            message: 'Переданы некорректные данные',
-          });
+        next(new DataIncorrect('Переданы некорректные данные.'));
+      } else {
+        next(err);
       }
-      if (err.statusCode === ERR_404) {
-        return res.status(ERR_404).send({
-          message: err.errorMessage,
-        });
-      }
-      return res.status(ERR_500).send({
-        message: 'Ошибка по-умолчанию',
-      });
     });
 };
 
@@ -163,9 +155,20 @@ module.exports.login = (req, res) => {
     });
 };
 
-module.exports.getUserMe = (req, res) => {
+module.exports.getUserMe = (req, res, next) => {
   const { _id } = req.user;
   User.find({ _id })
-    .then((user) => res.send(user))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((user) => {
+      if (!user._id) {
+        next(new NotFound('Пользователь не найден'));
+      }
+      res.status(200).send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new DataIncorrect('Переданы некорректные данные.'));
+      } else {
+        next(err);
+      }
+    });
 };
