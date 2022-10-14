@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const NotFound = require('../errors/NotFound');
 const User = require('../models/user');
+
 const {
   ERR_500,
   ERR_404,

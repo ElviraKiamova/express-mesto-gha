@@ -1,5 +1,6 @@
 const Cards = require('../models/card');
 const NotFound = require('../errors/NotFound');
+const DataIncorrect = require('../errors/DataIncorrect');
 
 const {
   ERR_500,
@@ -74,21 +75,21 @@ module.exports.dislikeCard = (req, res) => {
     });
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   Cards.findByIdAndRemove(req.params.cardId)
     .orFail(() => {
       throw new NotFound('Карточка не найдена');
     })
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (!card) {
+        next(new NotFound('Карточка не найдена'));
+      }
+      res.status(200).send({ data: card, message: 'Карточка удалена' });
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res
-          .status(ERR_400)
-          .send({ message: 'Переданы некорректные данные' });
+        next(new DataIncorrect({ message: 'Переданы некорректные данные' }));
       }
-      if (err.statusCode === ERR_404) {
-        return res.status(ERR_404).send({ message: err.errorMessage });
-      }
-      return res.status(ERR_500).send({ message: 'Ошибка по-умолчанию' });
+      next(err);
     });
 };

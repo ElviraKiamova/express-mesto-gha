@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const handleAuthError = (res) => {
   res
@@ -6,20 +7,16 @@ const handleAuthError = (res) => {
     .send({ message: 'Необходима авторизация' });
 };
 
-const extractBearerToken = (header) => header.replace('Bearer ', '');
-
-module.exports = (req, res, next) => {
-  const { authorization } = req.headers;
-
-  if (!authorization || !authorization.startsWith('Bearer ')) {
+module.exports = async (req, res, next) => {
+  const cookieAuth = req.cookies.jwt;
+  if (!cookieAuth) {
     return handleAuthError(res);
   }
 
-  const token = extractBearerToken(authorization);
   let payload;
 
   try {
-    payload = jwt.verify(token, 'super-strong-secret');
+    payload = await jwt.verify(cookieAuth, 'super-strong-secret');
   } catch (err) {
     return handleAuthError(res);
   }

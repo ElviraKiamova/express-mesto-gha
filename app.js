@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 
-const { PORT } = process.env;
+const { PORT = 3000 } = process.env;
 const app = express();
 app.use(cookieParser());
 app.use(bodyParser.json());
