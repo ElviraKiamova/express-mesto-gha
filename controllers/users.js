@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const NotFound = require('../errors/NotFound');
 const User = require('../models/user');
 const DataIncorrect = require('../errors/DataIncorrect');
+const RegistrationError = require('../errors/RegistrationError');
+const NotAuthorized = require('../errors/NotAuthorized');
 
 const {
   ERR_500,
@@ -38,7 +40,7 @@ module.exports.getUserId = (req, res, next) => {
     });
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name,
     about,
@@ -47,8 +49,13 @@ module.exports.createUser = (req, res) => {
     password,
   } = req.body;
 
-  bcrypt
-    .hash(password, 10)
+  User.findOne({ email })
+    .then((user) => {
+      if (user) {
+        next(new RegistrationError(`Пользователь с таким email ${email} уже зарегистрирован`));
+      }
+      return bcrypt.hash(password, 10);
+    })
     .then((hash) => User.create({
       name,
       about,
@@ -56,22 +63,22 @@ module.exports.createUser = (req, res) => {
       email,
       password: hash,
     }))
-    .then((user) => res.send({
-      data: user,
-    }))
+    .then((user) => User.findOne({ _id: user._id })) // прячет пароль
+    .then((user) => {
+      res.status(200).send(user);
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(ERR_400).send({
-          message: 'Переданы некорректные данные',
-        });
+        next(new DataIncorrect('Переданы некорректные данные.'));
+      } else if (err.code === 11000) {
+        next(new RegistrationError({ message: err.errorMessage }));
+      } else {
+        next(err);
       }
-      return res.status(ERR_500).send({
-        message: 'Ошибка по-умолчанию',
-      });
     });
 };
 
-module.exports.updateUserInfo = (req, res) => {
+module.exports.updateUserInfo = (req, res, next) => {
   const {
     name,
     about,
@@ -86,27 +93,21 @@ module.exports.updateUserInfo = (req, res) => {
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send({
-      data: user,
-    }))
+    .then((user) => {
+      if (!user) {
+        next(new DataIncorrect('Переданы некорректные данные'));
+      }
+      res.status(200).send({ data: user });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(ERR_400).send({
-          message: 'Переданы некорректные данные',
-        });
+        next(new DataIncorrect('Переданы некорректные данные'));
       }
-      if (err.statusCode === ERR_404) {
-        return res.status(ERR_404).send({
-          message: err.errorMessage,
-        });
-      }
-      return res.status(ERR_500).send({
-        message: 'Ошибка по-умолчанию',
-      });
+      next(err);
     });
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const {
     avatar,
   } = req.body;
@@ -119,27 +120,21 @@ module.exports.updateAvatar = (req, res) => {
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send({
-      data: user,
-    }))
+    .then((user) => {
+      if (!user) {
+        next(new DataIncorrect('Переданы некорректные данные'));
+      }
+      res.status(200).send({ data: user });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(ERR_400).send({
-          message: 'Переданы некорректные данные',
-        });
+        next(new DataIncorrect('Переданы некорректные данные'));
       }
-      if (err.statusCode === ERR_404) {
-        return res.status(ERR_404).send({
-          message: err.errorMessage,
-        });
-      }
-      return res.status(ERR_500).send({
-        message: 'Ошибка по-умолчанию',
-      });
+      next(err);
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -148,10 +143,13 @@ module.exports.login = (req, res) => {
         maxAge: 3600000,
         httpOnly: true,
       });
-      res.send({ token });
+      res.status(201).send({ message: 'Авторизация успешна', token });
     })
     .catch((err) => {
-      res.status(401).send({ message: err.message });
+      if (err.message === 'IncorrectEmail') {
+        next(new NotAuthorized('Не правильный логин или пароль'));
+      }
+      next(err);
     });
 };
 
