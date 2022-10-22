@@ -7,17 +7,17 @@ const userSchema = new mongoose.Schema({
     type: String,
     minlength: 2,
     maxlength: 30,
-    default: 'Эльвира',
+    default: 'Жак-Ив Кусто',
   },
   about: {
     type: String,
     minlength: 2,
     maxlength: 30,
-    default: 'ааа',
+    default: 'Исследователь',
   },
   avatar: {
     type: String,
-    default: 'https://attuale.ru/wp-content/uploads/2018/12/Cats_Kittens_Ginger_450549_1920x1200.jpg',
+    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
       validator: (v) => isURL(v, { required_protocol: true }),
       message: "Поле 'avatar' не соответствует формату URL",
