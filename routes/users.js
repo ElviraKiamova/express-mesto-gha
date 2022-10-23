@@ -19,4 +19,5 @@ router.get('/:userId', auth, parameterIdValid('userId'), getUserId);
 router.patch('/me', auth, userValid, updateUserInfo);
 router.patch('/me/avatar', userAvatarValid, updateAvatar);
 router.get('/me', auth, getUserMe);
+
 module.exports = router;

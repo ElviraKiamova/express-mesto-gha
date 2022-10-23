@@ -1,7 +1,7 @@
 class DataIncorrect extends Error {
   constructor(message) {
     super(message);
-    this.errorMessage = message;
+    this.name = 'DataIncorrect';
     this.statusCode = 400;
   }
 }

@@ -72,7 +72,7 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then((user) => User.findOne({ _id: user._id })) // прячет пароль
+    .then((user) => User.findOne({ _id: user._id }))
     .then((user) => {
       res.status(200).send(user);
     })
