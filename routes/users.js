@@ -14,7 +14,7 @@ const {
   getUserMe,
 } = require('../controllers/users');
 
-router.get('/me', auth, getUserMe);
+router.get('/me', getUserMe);
 router.get('/:userId', auth, parameterIdValid('userId'), getUserId);
 router.get('/', auth, getUser);
 router.patch('/me/avatar', userAvatarValid, updateAvatar);
