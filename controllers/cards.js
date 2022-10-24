@@ -74,10 +74,13 @@ module.exports.deleteCard = (req, res, next) => {
   Cards.findById(req.params.cardId)
     .orFail(new ErrorNotFound('Карточка не найдена'))
     .then((card) => {
-      if (card.owner.toString() !== userId) {
-        throw new ForbiddenError('Нельзя удалять чужую карточку');
+      if (card) {
+        if (card.owner.toString() === userId) {
+          card.delete().then(() => res.status(200).send({ message: 'Карточка удалена' }));
+        } else {
+          throw new ForbiddenError('Нельзя удалять чужую карточку');
+        }
       }
-      card.delete().then(() => res.status(200).send({ message: 'Карточка удалена' }));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
