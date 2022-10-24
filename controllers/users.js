@@ -8,7 +8,7 @@ const NotAuthorized = require('../errors/NotAuthorized');
 
 module.exports.getUser = (req, res, next) => {
   User.find({})
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.send(user))
     .catch((err) => next(err));
 };
 
