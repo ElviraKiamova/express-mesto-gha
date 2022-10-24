@@ -35,9 +35,6 @@ module.exports.getUserId = (req, res, next) => {
       throw new NotFound('Пользователь не найден');
     })
     .then((user) => {
-      if (!user._id) {
-        throw new NotFound('Пользователь не найден');
-      }
       res.status(200).send(user);
     })
     .catch((err) => {
