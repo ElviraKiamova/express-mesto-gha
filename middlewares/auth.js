@@ -7,12 +7,11 @@ module.exports = (req, res, next) => {
   if (!authorization || !authorization.startsWith('Bearer ')) {
     return next(new NotAuthorized('Необходима авторизация'));
   }
-  const token = String(req.headers.authorization).replace('Bearer ', '');
-
+  const token = authorization.replace('Bearer ', '');
   let payload;
 
   try {
-    payload = jwt.verify(token, 'some-secret-key');
+    payload = jwt.verify(token, 'super-secret-key');
   } catch (err) {
     return next(new NotAuthorized('Необходима авторизация'));
   }
