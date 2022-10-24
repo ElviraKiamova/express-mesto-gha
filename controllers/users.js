@@ -140,4 +140,5 @@ module.exports.login = (req, res, next) => {
         next(new NotAuthorized('Не правильный логин или пароль'));
       }
       next(err);
+    });
 };
