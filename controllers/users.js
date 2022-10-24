@@ -16,7 +16,7 @@ module.exports.getUserMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user._id) {
-        next(new NotFound('Пользователь не найден'));
+        throw new NotFound('Пользователь не найден');
       }
       res.status(200).send(user);
     })
@@ -36,7 +36,7 @@ module.exports.getUserId = (req, res, next) => {
     })
     .then((user) => {
       if (!user._id) {
-        next(new NotFound('Пользователь не найден'));
+        throw new NotFound('Пользователь не найден');
       }
       res.status(200).send(user);
     })
@@ -61,7 +61,7 @@ module.exports.createUser = (req, res, next) => {
   User.findOne({ email })
     .then((user) => {
       if (user) {
-        next(new RegistrationError(`Пользователь с таким email ${email} уже зарегистрирован`));
+        throw new RegistrationError(`Пользователь с таким email ${email} уже зарегистрирован`);
       }
       return bcrypt.hash(password, 10);
     })
@@ -95,7 +95,7 @@ module.exports.updateUserInfo = (req, res, next) => {
     })
     .then((user) => {
       if (!user) {
-        next(new DataIncorrect('Переданы некорректные данные'));
+        throw new DataIncorrect('Переданы некорректные данные');
       }
       res.status(200).send({ data: user });
     })
@@ -115,7 +115,7 @@ module.exports.updateAvatar = (req, res, next) => {
     })
     .then((user) => {
       if (!user) {
-        next(new DataIncorrect('Переданы некорректные данные'));
+        throw new DataIncorrect('Переданы некорректные данные');
       }
       res.status(200).send({ data: user });
     })

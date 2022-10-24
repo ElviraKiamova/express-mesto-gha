@@ -1,12 +1,11 @@
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
 const NotAuthorized = require('../errors/NotAuthorized');
 
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    next(new NotAuthorized('Необходима авторизация'));
+    return next(new NotAuthorized('Необходима авторизация'));
   }
   const token = String(req.headers.authorization).replace('Bearer ', '');
 
