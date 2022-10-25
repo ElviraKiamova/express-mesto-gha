@@ -3,12 +3,12 @@ const NotAuthorized = require('../errors/NotAuthorized');
 
 module.exports = (req, res, next) => {
   // let { token } = req.cookies;
-  // const { authorization } = req.headers;
-  const { token } = req.cookies;
+  const { authorization } = req.headers;
 
-  if (!token) {
+  if (!authorization || !authorization.startsWith('Bearer ')) {
     return next(new NotAuthorized('Необходима авторизация'));
   }
+  const token = String(req.headers.authorization).replace('Bearer ', '');
 
   let payload;
 
