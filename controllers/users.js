@@ -55,14 +55,14 @@ module.exports.createUser = (req, res, next) => {
     password,
   } = req.body;
 
-  // User.findOne({ email })
-  //   .then((user) => {
-  //     if (user) {
-  //       next(new RegistrationError(`Пользователь с таким email ${email} уже зарегистрирован`));
-  //     }
-  //     return bcrypt.hash(password, 10);
-  //   })
-  bcrypt.hash(password, 10)
+  User.findOne({ email })
+    .then((user) => {
+      if (user) {
+        next(new RegistrationError(`Пользователь с таким email ${email} уже зарегистрирован`));
+      }
+      return bcrypt.hash(password, 10);
+    })
+  // bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name,
       about,
@@ -70,7 +70,7 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    // .then((user) => User.findOne({ _id: user._id }))
+    .then((user) => User.findOne({ _id: user._id }))
     .then((user) => {
       res.status(200).send(user);
     })
