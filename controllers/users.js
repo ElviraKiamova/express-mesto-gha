@@ -55,14 +55,14 @@ module.exports.createUser = (req, res, next) => {
     password,
   } = req.body;
 
-  // User.findOne({ email })
-  //   .then((user) => {
-  //     if (user) {
-  //       next(new RegistrationError(`Пользователь с таким email ${email} уже зарегистрирован`));
-  //     }
-  //     return bcrypt.hash(password, 10);
-  //   })
-  bcrypt.hash(password, 10)
+  User.findOne({ email })
+    .then((user) => {
+      if (user) {
+        next(new RegistrationError(`Пользователь с таким email ${email} уже зарегистрирован`));
+      }
+      return bcrypt.hash(password, 10);
+    })
+  // bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name,
       about,
@@ -70,7 +70,7 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    // .then((user) => User.findOne({ _id: user._id }))
+    .then((user) => User.findOne({ _id: user._id }))
     .then((user) => {
       res.status(200).send(user);
     })
@@ -129,13 +129,16 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-      res.cookie('jwt', token, {
-        maxAge: 3600000 * 24 * 7,
-        httpOnly: true,
-        sameSite: true,
+      // const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      // res.cookie('jwt', token, {
+      //   maxAge: 3600000 * 24 * 7,
+      //   httpOnly: true,
+      //   sameSite: true,
+      // });
+      // res.status(200).send({ message: 'Авторизация успешна', token });
+      res.send({
+        token: jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' }),
       });
-      res.status(200).send({ message: 'Авторизация успешна', token });
     })
     .catch(() => {
       next(new NotAuthorized('Не правильный логин или пароль'));
