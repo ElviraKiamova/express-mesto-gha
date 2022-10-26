@@ -125,7 +125,7 @@ module.exports.updateAvatar = (req, res, next) => {
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -134,6 +134,9 @@ module.exports.login = (req, res) => {
       });
     })
     .catch((err) => {
-      res.status(401).send({ message: err.message });
+      if (err.message === 'IncorrectEmail') {
+        next(new NotAuthorized('Не правильный логин или пароль'));
+      }
+      next(err);
     });
 };
