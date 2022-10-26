@@ -1,25 +1,18 @@
 const jwt = require('jsonwebtoken');
 const NotAuthorized = require('../errors/NotAuthorized');
 
-const extractBearerToken = (header) => {
-  header.replace('Bearer ', '');
-};
-
 module.exports = (req, res, next) => {
-  const { authorization } = req.headers;
+  const { authorization } = req.cookies;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
     return next(new NotAuthorized('Необходима авторизация'));
   }
-  // const token = String(req.headers.authorization).replace('Bearer ', '');
-
-  const token = extractBearerToken(authorization);
+  const token = String(req.headers.authorization).replace('Bearer ', '');
 
   let payload;
 
   try {
-    // payload = jwt.verify(token, 'some-secret-key');
-    payload = jwt.verify(token, 'super-strong-secret');
+    payload = jwt.verify(token, 'some-secret-key');
   } catch (err) {
     return next(new NotAuthorized('Необходима авторизация'));
   }
