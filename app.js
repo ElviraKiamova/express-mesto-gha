@@ -36,4 +36,4 @@ app.use(errors());
 
 app.use(errorHandler);
 
-app.listen(PORT);
+app.listen(PORT); // будем принимать сообщения с 3000 порта 
