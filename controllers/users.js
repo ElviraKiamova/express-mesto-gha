@@ -55,24 +55,20 @@ module.exports.createUser = (req, res, next) => {
     password,
   } = req.body;
 
-  User.findOne({ email })
+  User.create({
+    name,
+    about,
+    avatar,
+    email,
+    password: bcrypt.hash(password, 10),
+  })
     .then((user) => {
-      if (user) {
-        next(new RegistrationError(`Пользователь с таким email ${email} уже зарегистрирован`));
-      }
-      return bcrypt.hash(password, 10);
-    })
-  // bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
-    }))
-    .then((user) => User.findOne({ _id: user._id }))
-    .then((user) => {
-      res.status(200).send(user);
+      res.status(200).send({
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -138,10 +134,7 @@ module.exports.login = (req, res, next) => {
       res.status(200).send({ message: 'Авторизация успешна', token });
     })
     .catch((err) => {
-      if (err.message === 'IncorrectEmail') {
-        next(new NotAuthorized('Не правильный логин или пароль'));
-      }
-      next(err);
+      next(new NotAuthorized('Не правильный логин или пароль'));
     });
 };
 
