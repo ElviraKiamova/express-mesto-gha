@@ -18,6 +18,6 @@ router.get('/me', getUserMe);
 router.get('/:userId', parameterIdValid('userId'), getUserId);
 router.get('/', getUser);
 router.patch('/me/avatar', userAvatarValid, updateAvatar);
-router.patch('/me', auth, userValid, updateUserInfo);
+router.patch('/me', userValid, updateUserInfo);
 
 module.exports = router;
