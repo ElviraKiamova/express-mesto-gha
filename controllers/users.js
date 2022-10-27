@@ -99,6 +99,7 @@ module.exports.updateUserInfo = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new DataIncorrect('Переданы некорректные данные'));
+        return;
       }
       next(err);
     });
@@ -119,6 +120,7 @@ module.exports.updateAvatar = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new DataIncorrect('Переданы некорректные данные'));
+        return;
       }
       next(err);
     });
@@ -135,7 +137,5 @@ module.exports.login = (req, res, next) => {
       );
       res.send({ token });
     })
-    .catch(() => {
-      next(new NotAuthorized('Не правильный логин или пароль'));
-    });
+    .catch(next);
 };
