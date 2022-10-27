@@ -83,7 +83,8 @@ module.exports.deleteCard = (req, res, next) => {
       if (card) {
         if (card.owner.toString() === userId) {
           card.delete()
-            .then(() => res.status(200).send({ message: 'Карточка удалена' }));
+            .then(() => res.status(200).send({ message: 'Карточка удалена' }))
+            .catch(next);
         } else {
           throw new ForbiddenError('Нельзя удалять чужую карточку');
         }
